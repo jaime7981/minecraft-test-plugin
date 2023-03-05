@@ -1,0 +1,11 @@
+main: xyz.developmentcl.App
+name: BlankTestPlugin
+version: 0.1
+commands:
+  xpshop:
+    description: You can buy items with xp!
+    usage: /xpshop <item>
+  login:
+    description: You can login or register for custom plugins
+    usage: /login <password> <password>
+    aliases: [register]

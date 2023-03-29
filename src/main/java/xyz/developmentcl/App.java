@@ -1,14 +1,24 @@
 package xyz.developmentcl;
 
+import xyz.developmentcl.commands.FactionCommand;
 import xyz.developmentcl.commands.LogginCommand;
+import xyz.developmentcl.commands.RegisterCommand;
 import xyz.developmentcl.commands.XPShopCommand;
+
+import xyz.developmentcl.database.DatabaseConnector;
+import xyz.developmentcl.database.PlayerPlugin;
+
 import xyz.developmentcl.eventlisteners.BreakBlock;
 import xyz.developmentcl.eventlisteners.ServerLogin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class App extends JavaPlugin {
     DatabaseConnector database = null;
+    List<PlayerPlugin> activePlayers = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -37,6 +47,8 @@ public class App extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ServerLogin(), this);
         getCommand("xpshop").setExecutor(new XPShopCommand());
         getCommand("login").setExecutor(new LogginCommand(database));
+        getCommand("register").setExecutor(new RegisterCommand(database));
+        getCommand("faction").setExecutor(new FactionCommand(database));
     }
 
     @Override

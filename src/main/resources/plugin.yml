@@ -6,6 +6,11 @@ commands:
     description: You can buy items with xp!
     usage: /xpshop <item>
   login:
-    description: You can login or register for custom plugins
+    description: You can login for custom plugins
     usage: /login <password> <password>
-    aliases: [register]
+  register:
+    description: You can register for custom plugins
+    usage: /register <password> <password>
+  faction:
+    description: You can register for custom plugins
+    usage: /faction <action> <faction_name>(optional)

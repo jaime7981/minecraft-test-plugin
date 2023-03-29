@@ -10,17 +10,16 @@ import org.bukkit.command.CommandSender;
 
 import org.bukkit.entity.Player;
 
-public class LogginCommand implements CommandExecutor {
-    
+public class RegisterCommand implements CommandExecutor {
     private DatabaseConnector connector;
     private PasswordHasher passwordHasher = new PasswordHasher();
     
     private String passwd;
     private String confirmation;
-    Player player;
+    private Player player;
     private String playerName;
 
-    public LogginCommand(DatabaseConnector connector) {
+    public RegisterCommand(DatabaseConnector connector) {
         this.connector = connector;
     }
 
@@ -42,20 +41,20 @@ public class LogginCommand implements CommandExecutor {
         */
 
         if (args.length != 2) {
-            player.sendMessage(ChatColor.RED + "Usage: /login <user> <password>");
+            player.sendMessage(ChatColor.RED + "Usage: /register <password> <password>");
             return true;
         }
 
         passwd = args[0];
         confirmation = args[1];
 
-        player.sendMessage(ChatColor.RED + "Trying to login as " + playerName);
+        player.sendMessage(ChatColor.RED + "Trying to register as " + playerName);
         if (passwd.equals(confirmation)) {
-            if (checkPlayerLogin(playerName, passwd)) {
-                player.sendMessage(ChatColor.GREEN + "Login as " + playerName + " was successful.");
+            if (insertPlayerOnDatabase(playerName, passwd)) {
+                player.sendMessage(ChatColor.GREEN + "Registration as " + playerName + " was successful.");
                 return true;
             }
-            player.sendMessage(ChatColor.RED + "Login as " + playerName + " went wrong.");
+            player.sendMessage(ChatColor.RED + "Registration as " + playerName + " went wrong.");
             return false;
         }
         
@@ -63,13 +62,13 @@ public class LogginCommand implements CommandExecutor {
         return false;
     }
 
-    public boolean checkPlayerLogin(String username, String password) {
+    public boolean insertPlayerOnDatabase(String username, String password) {
         if (this.connector != null){
             String hashedPassword = passwordHasher.hashPassword(password);
             if (hashedPassword == null) {
                 return false;
             }
-            if (hashedPassword.equals(this.connector.getPlayerPasswordByUsername(username, password))) {
+            if (this.connector.insertPlayer(username, hashedPassword)) {
                 return true;
             }
         }

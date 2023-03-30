@@ -1,6 +1,7 @@
 package xyz.developmentcl.commands;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,8 +10,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import xyz.developmentcl.database.PlayerPlugin;
+
 public class XPShopCommand implements CommandExecutor {
     private ItemRegistry itemRegistry = new ItemRegistry();
+    private List<PlayerPlugin> activePlayers;
+
+    private String playerName;
+    private Boolean isLoggedIn;
+
+    public XPShopCommand(List<PlayerPlugin> activePlayers) {
+        this.activePlayers = activePlayers;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -21,6 +32,20 @@ public class XPShopCommand implements CommandExecutor {
     }
     
     Player player = (Player) sender;
+    playerName = player.getDisplayName();
+    
+    isLoggedIn = false;
+    for (PlayerPlugin aPlayer : activePlayers) {
+        if (aPlayer.getPlayerName().equals(playerName)) {
+            isLoggedIn = true;
+            break;
+        }
+    }
+
+    if (isLoggedIn == false) {
+        player.sendMessage(ChatColor.RED + "You must be logged in to use this command");
+        return false;
+    }
     
     // Check if the player has permission to use the command
     /*

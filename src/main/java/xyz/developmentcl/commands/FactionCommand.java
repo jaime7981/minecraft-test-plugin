@@ -16,16 +16,19 @@ import org.bukkit.entity.Player;
 public class FactionCommand implements CommandExecutor {
     private DatabaseConnector connector;
     private List<Faction> factions;
+    private List<PlayerPlugin> activePlayers;
 
     private Player player;
     private String playerName;
     private String action;
     private String factionName;
     private String infoString;
+    private Boolean isLoggedIn;
 
-    public FactionCommand(DatabaseConnector connector, List<Faction> factions) {
+    public FactionCommand(DatabaseConnector connector, List<Faction> factions, List<PlayerPlugin> activePlayers) {
         this.connector = connector;
         this.factions = factions;
+        this.activePlayers = activePlayers;
     }
 
     @Override
@@ -37,6 +40,19 @@ public class FactionCommand implements CommandExecutor {
         
         player = (Player) sender;
         playerName = player.getDisplayName();
+        
+        isLoggedIn = false;
+        for (PlayerPlugin aPlayer : activePlayers) {
+            if (aPlayer.getPlayerName().equals(playerName)) {
+                isLoggedIn = true;
+                break;
+            }
+        }
+
+        if (isLoggedIn == false) {
+            player.sendMessage(ChatColor.RED + "You must be logged in to use this command");
+            return false;
+        }
 
         if (!(0 < args.length && args.length < 3)) {
             player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");

@@ -1,7 +1,10 @@
 package xyz.developmentcl.commands;
 
 import xyz.developmentcl.database.DatabaseConnector;
+import xyz.developmentcl.database.PlayerPlugin;
 import xyz.developmentcl.password.PasswordHasher;
+
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -14,14 +17,17 @@ public class LogginCommand implements CommandExecutor {
     
     private DatabaseConnector connector;
     private PasswordHasher passwordHasher = new PasswordHasher();
+
+    private List<PlayerPlugin> activePlayers;
     
+    private Player player;
     private String passwd;
     private String confirmation;
-    Player player;
     private String playerName;
 
-    public LogginCommand(DatabaseConnector connector) {
+    public LogginCommand(DatabaseConnector connector, List<PlayerPlugin> activePlayers) {
         this.connector = connector;
+        this.activePlayers = activePlayers;
     }
 
     @Override
@@ -52,6 +58,13 @@ public class LogginCommand implements CommandExecutor {
         player.sendMessage(ChatColor.RED + "Trying to login as " + playerName);
         if (passwd.equals(confirmation)) {
             if (checkPlayerLogin(playerName, passwd)) {
+                PlayerPlugin newPlayer = connector.getPlayerPluginByUsername(playerName);
+                if (newPlayer != null) {
+                    activePlayers.add(newPlayer);
+                }
+                else {
+                    activePlayers.add(new PlayerPlugin(playerName, 0));
+                }
                 player.sendMessage(ChatColor.GREEN + "Login as " + playerName + " was successful.");
                 return true;
             }

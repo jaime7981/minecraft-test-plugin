@@ -10,6 +10,7 @@ import xyz.developmentcl.database.PlayerPlugin;
 
 import xyz.developmentcl.eventlisteners.BreakBlock;
 import xyz.developmentcl.eventlisteners.ServerLogin;
+import xyz.developmentcl.eventlisteners.ServerQuit;
 import xyz.developmentcl.factions.Faction;
 
 import java.util.ArrayList;
@@ -34,12 +35,13 @@ public class App extends JavaPlugin {
             factions = database.getAllFactionsFromDB();
         }
 
-        getCommand("faction").setExecutor(new FactionCommand(database, factions));
-        getCommand("login").setExecutor(new LogginCommand(database));
+        getCommand("faction").setExecutor(new FactionCommand(database, factions, activePlayers));
+        getCommand("login").setExecutor(new LogginCommand(database, activePlayers));
         getCommand("register").setExecutor(new RegisterCommand(database));
-        getCommand("xpshop").setExecutor(new XPShopCommand());
+        getCommand("xpshop").setExecutor(new XPShopCommand(activePlayers));
         getServer().getPluginManager().registerEvents(new BreakBlock(factions), this);
         getServer().getPluginManager().registerEvents(new ServerLogin(), this);
+        getServer().getPluginManager().registerEvents(new ServerQuit(activePlayers), this);
     }
 
     @Override

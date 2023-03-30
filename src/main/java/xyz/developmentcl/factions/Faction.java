@@ -6,17 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Faction {
+    private int id;
     private String name;
     private List<PlayerPlugin> members;
     private List<Faction> enemies;
     private List<Faction> allies;
 
-    public Faction(String name) {
+    public Faction(String name, int id) {
         this.name = name;
-        // Load faction info from database
-        // Whenever new data is comming, 
-        // first insert to database then
-        // load it into the program
+        this.id = id;
         members = new ArrayList<PlayerPlugin>();
         enemies = new ArrayList<Faction>();
         allies = new ArrayList<Faction>();
@@ -24,6 +22,10 @@ public class Faction {
 
     public String getName() {
         return name;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public void addMember(PlayerPlugin player) {

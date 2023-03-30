@@ -23,9 +23,9 @@ public class FactionCommand implements CommandExecutor {
     private String factionName;
     private String infoString;
 
-    public FactionCommand(DatabaseConnector connector) {
+    public FactionCommand(DatabaseConnector connector, List<Faction> factions) {
         this.connector = connector;
-        factions = this.connector.getAllFactions();
+        this.factions = factions;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class FactionCommand implements CommandExecutor {
         player = (Player) sender;
         playerName = player.getDisplayName();
 
-        if (args.length >= 1 || args.length <= 2) {
+        if (!(0 < args.length && args.length < 3)) {
             player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");
             return true;
         }
@@ -54,12 +54,27 @@ public class FactionCommand implements CommandExecutor {
             return true;
         }
         else if (action.equals("leave")) {
+            factionName = "";
+            for (Faction faction : factions) {
+                for (PlayerPlugin player : faction.getMembers()) {
+                    if (player.getPlayerName().equals(playerName)) {
+                        factionName = faction.getName();
+                        break;
+                    }
+                }
+                if (factionName != "") {
+                    break;
+                }
+            }
+            if (factionName == "") {
+                player.sendMessage(ChatColor.RED + "You are not into any faction");
+                return false;
+            }
             if (this.connector.removePlayerFromFaction(factionName, playerName)) {
                 for (Faction faction : factions) {
-                    if (faction.getName() == factionName) {
-                        List<PlayerPlugin> members = faction.getMembers();
-                        for (PlayerPlugin member : members) {
-                            if (member.getPlayerName() == playerName) {
+                    if (faction.getName().equals(factionName)) {
+                        for (PlayerPlugin member : faction.getMembers()) {
+                            if (member.getPlayerName().equals(playerName)) {
                                 faction.removeMember(member);
                                 break;
                             }
@@ -74,6 +89,11 @@ public class FactionCommand implements CommandExecutor {
             return false;
         }
 
+        if (args.length != 2) {
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");
+            return false;
+        }
+
         factionName = args[1].toUpperCase();
 
         if (factionName.length() <= 4) {
@@ -84,7 +104,7 @@ public class FactionCommand implements CommandExecutor {
         if (action.equals("create")) {
             if (this.connector.insertFaction(factionName)) {
                 player.sendMessage(ChatColor.GREEN + "Faction Created Succesfully");
-                Faction newFaction = new Faction(factionName);
+                Faction newFaction = new Faction(factionName, -1);
                 this.factions.add(newFaction);
                 return true;
             }
@@ -92,10 +112,33 @@ public class FactionCommand implements CommandExecutor {
             return false;
         }
         else if (action.equals("join")) {
+            Boolean IsOnFaction = false;
+            for (Faction faction : factions) {
+                for (PlayerPlugin player : faction.getMembers()) {
+                    if (player.getPlayerName().equals(playerName)) {
+                        IsOnFaction = true;
+                        break;
+                    }
+                }
+                if (IsOnFaction == true) {
+                    break;
+                }
+            }
+            if (IsOnFaction == true) {
+                player.sendMessage(ChatColor.RED + "You are already into any faction");
+                return false;
+            }
             if (this.connector.insertPlayerIntoFaction(factionName, playerName)) {
                 for (Faction faction : factions) {
-                    if (faction.getName() == factionName) {
-                        faction.addMember(new PlayerPlugin(playerName));
+                    if (faction.getName().equals(factionName)) {
+                        PlayerPlugin newPlayer = this.connector.getPlayerPluginByUsername(playerName);
+                        if (newPlayer != null) {
+                            faction.addMember(newPlayer);
+                        }
+                        else {
+                            player.sendMessage(ChatColor.RED + "Error creating user while joining faction");
+                            return false;
+                        }
                         break;
                     }
                 }
@@ -106,21 +149,16 @@ public class FactionCommand implements CommandExecutor {
             return false;
         }
         else if (action.equals("members")) {
-            String membersString = ChatColor.BLUE + factionName + "\n";
+            player.sendMessage(ChatColor.BLUE + factionName + ":");
             for (Faction faction : factions) {
-                if (faction.getName() == factionName) {
+                if (faction.getName().equals(factionName)) {
                     List<PlayerPlugin> members = faction.getMembers();
                     for (PlayerPlugin member : members) {
-                        if (member.getPlayerName() == playerName) {
-                            faction.removeMember(member);
-                            membersString += ChatColor.RED + playerName + "\n";
-                            break;
-                        }
+                        player.sendMessage(ChatColor.RED + member.getPlayerName());
                     }
                     break;
                 }
             }
-            player.sendMessage(membersString);
             return true;
         }
         return false;

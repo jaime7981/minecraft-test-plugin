@@ -10,6 +10,7 @@ import xyz.developmentcl.database.PlayerPlugin;
 
 import xyz.developmentcl.eventlisteners.BreakBlock;
 import xyz.developmentcl.eventlisteners.ServerLogin;
+import xyz.developmentcl.factions.Faction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,38 +18,28 @@ import java.util.List;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class App extends JavaPlugin {
-    DatabaseConnector database = null;
+    DatabaseConnector database;
     List<PlayerPlugin> activePlayers = new ArrayList<>();
+    List<Faction> factions;
 
     @Override
     public void onEnable() {
         getLogger().info("Hello, SpigotMC!");
 
-        String url = "jdbc:postgresql://localhost:5432/minecraft_server_db";
-        String username = "jaime_admin";
-        String password = "Jaime@79811";
+        database = getConnector();
 
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            getLogger().severe("Failed to load jdbc driver.");
-        }
-
-        database = new DatabaseConnector(url, username, password);
-        if (database.connect()) {
-            getLogger().info("Connected to database.");
+        if (database == null) {
+            factions = new ArrayList<>();
         } else {
-            getLogger().severe("Failed to connect to database.");
-            database = null;
+            factions = database.getAllFactionsFromDB();
         }
 
-        getServer().getPluginManager().registerEvents(new BreakBlock(), this);
-        getServer().getPluginManager().registerEvents(new ServerLogin(), this);
-        getCommand("xpshop").setExecutor(new XPShopCommand());
+        getCommand("faction").setExecutor(new FactionCommand(database, factions));
         getCommand("login").setExecutor(new LogginCommand(database));
         getCommand("register").setExecutor(new RegisterCommand(database));
-        getCommand("faction").setExecutor(new FactionCommand(database));
+        getCommand("xpshop").setExecutor(new XPShopCommand());
+        getServer().getPluginManager().registerEvents(new BreakBlock(factions), this);
+        getServer().getPluginManager().registerEvents(new ServerLogin(), this);
     }
 
     @Override
@@ -65,9 +56,24 @@ public class App extends JavaPlugin {
     }
 
     public DatabaseConnector getConnector() {
-        if (database != null) {
-            return database;
+        String url = "jdbc:postgresql://localhost:5432/minecraft_server_db";
+        String username = "jaime_admin";
+        String password = "Jaime@79811";
+
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            getLogger().severe("Failed to load jdbc driver.");
         }
-        return null;
+
+        database = new DatabaseConnector(url, username, password);
+        if (database.connect()) {
+            getLogger().info("Connected to database.");
+            return database;
+        } else {
+            getLogger().severe("Failed to connect to database.");
+            return null;
+        }
     }
 }

@@ -4,4 +4,7 @@ db.sqlite3
 
 ./data/db
 /data
+/db
+/target
+/src/target
 .fake

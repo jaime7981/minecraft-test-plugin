@@ -24,6 +24,7 @@ public class FactionCommand implements CommandExecutor {
     private String factionName;
     private String infoString;
     private Boolean isLoggedIn;
+    private Boolean isOnFaction;
 
     public FactionCommand(DatabaseConnector connector, List<Faction> factions, List<PlayerPlugin> activePlayers) {
         this.connector = connector;
@@ -54,6 +55,19 @@ public class FactionCommand implements CommandExecutor {
             return false;
         }
 
+        isOnFaction = false;
+        for (Faction faction : factions) {
+            for (PlayerPlugin player : faction.getMembers()) {
+                if (player.getPlayerName().equals(playerName)) {
+                    isOnFaction = true;
+                    break;
+                }
+            }
+            if (isOnFaction == true) {
+                break;
+            }
+        }
+
         if (!(0 < args.length && args.length < 3)) {
             player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");
             return true;
@@ -70,6 +84,10 @@ public class FactionCommand implements CommandExecutor {
             return true;
         }
         else if (action.equals("leave")) {
+            if (isOnFaction == false) {
+                player.sendMessage(ChatColor.RED + "You are not into any faction");
+                return false;
+            }
             factionName = "";
             for (Faction faction : factions) {
                 for (PlayerPlugin player : faction.getMembers()) {
@@ -81,10 +99,6 @@ public class FactionCommand implements CommandExecutor {
                 if (factionName != "") {
                     break;
                 }
-            }
-            if (factionName == "") {
-                player.sendMessage(ChatColor.RED + "You are not into any faction");
-                return false;
             }
             if (this.connector.removePlayerFromFaction(factionName, playerName)) {
                 for (Faction faction : factions) {
@@ -120,6 +134,7 @@ public class FactionCommand implements CommandExecutor {
         if (action.equals("create")) {
             if (this.connector.insertFaction(factionName)) {
                 player.sendMessage(ChatColor.GREEN + "Faction Created Succesfully");
+                // Function to get faction from DB
                 Faction newFaction = new Faction(factionName, -1);
                 this.factions.add(newFaction);
                 return true;
@@ -128,32 +143,18 @@ public class FactionCommand implements CommandExecutor {
             return false;
         }
         else if (action.equals("join")) {
-            Boolean IsOnFaction = false;
-            for (Faction faction : factions) {
-                for (PlayerPlugin player : faction.getMembers()) {
-                    if (player.getPlayerName().equals(playerName)) {
-                        IsOnFaction = true;
-                        break;
-                    }
-                }
-                if (IsOnFaction == true) {
-                    break;
-                }
-            }
-            if (IsOnFaction == true) {
-                player.sendMessage(ChatColor.RED + "You are already into any faction");
+            if (isOnFaction == true) {
+                player.sendMessage(ChatColor.RED + "You are already into a faction");
                 return false;
             }
             if (this.connector.insertPlayerIntoFaction(factionName, playerName)) {
                 for (Faction faction : factions) {
                     if (faction.getName().equals(factionName)) {
-                        PlayerPlugin newPlayer = this.connector.getPlayerPluginByUsername(playerName);
-                        if (newPlayer != null) {
-                            faction.addMember(newPlayer);
-                        }
-                        else {
-                            player.sendMessage(ChatColor.RED + "Error creating user while joining faction");
-                            return false;
+                        for (PlayerPlugin pPlayer : activePlayers) {
+                            if (pPlayer.getPlayerName().equals(playerName)) {
+                                faction.addMember(pPlayer);
+                                break;
+                            }
                         }
                         break;
                     }

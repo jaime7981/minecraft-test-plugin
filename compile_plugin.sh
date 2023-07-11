@@ -1,0 +1,1 @@
+mvn clean compile assembly:single -f /mine_plugin/pom.xml

@@ -56,5 +56,14 @@ public class Faction {
     public boolean isAlly(Faction faction) {
         return allies.contains(faction);
     }
+
+    public boolean isPlayerOnFaction(String playerName) {
+        for (PlayerPlugin player : members) {
+            if (player.getPlayerName().equals(playerName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

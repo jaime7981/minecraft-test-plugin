@@ -11,6 +11,13 @@ Windows:
 Linux:
  - `mvn clean compile assembly:single -f /mine_plugin/pom.xml`
 
+Copy compiled jar into plugins folder
+
+Windows:
+ - `COPY C:\Users\jaime\OneDrive\Documents\MinePlugins\TestPlugin\testplugin\target\testplugin-1.0-SNAPSHOT.jar .\plugins`
+Linux:
+ - `cp /mine_plugin/target/testplugin-1.0-SNAPSHOT-jar-with-dependencies.jar /mine_server/plugins`
+
 ## Server
 
 url: `developmentcl.xyz`

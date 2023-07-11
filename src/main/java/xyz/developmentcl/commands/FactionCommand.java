@@ -32,6 +32,15 @@ public class FactionCommand implements CommandExecutor {
         this.activePlayers = activePlayers;
     }
 
+    private Faction getPlayerFaction(String playerName) {
+        for (Faction faction : factions) {
+            if (faction.isPlayerOnFaction(playerName) == true) {
+                return faction;
+            }
+        }
+        return null;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -176,6 +185,24 @@ public class FactionCommand implements CommandExecutor {
                     break;
                 }
             }
+            return true;
+        }
+        else if(action.equals("set_safe_zone")) {
+            Faction playerFaction = getPlayerFaction(playerName);
+            if (playerFaction == null) {
+                player.sendMessage(ChatColor.RED + "You are not into any faction");
+                return false;
+            }
+            if (playerFaction.getName().equals(factionName)) {
+                player.sendMessage(ChatColor.RED + "You can't set your faction as safe zone");
+                return false;
+            }
+            /*
+            if (this.connector.setSafeZone(playerFaction)) {
+                player.sendMessage(ChatColor.GREEN + "Safe zone set Succesfully");
+                return true;
+            }
+             */
             return true;
         }
         return false;

@@ -23,7 +23,6 @@ public class FactionCommand implements CommandExecutor {
     private String action;
     private String factionName;
     private Faction commandFaction;
-    private String infoString;
     private Boolean isPlayerLoggedIn;
     private Boolean isPlayerOnFaction;
 
@@ -89,6 +88,19 @@ public class FactionCommand implements CommandExecutor {
         return true;
     }
 
+    private boolean showFactionInfo(Faction faction) {
+        player.sendMessage(ChatColor.BLUE + faction.getName() + ":");
+        player.sendMessage(ChatColor.RED + "Members: " + faction.getMembers().size());
+        return true;
+    }
+
+    private boolean showFactionsInfo() {
+        for (Faction faction : factions) {
+            showFactionInfo(faction);
+        }
+        return true;
+    }
+
     private boolean createFaction(String factionName) {
         if (this.connector.insertFaction(factionName)) {
             player.sendMessage(ChatColor.GREEN + "Faction Created Succesfully");
@@ -138,12 +150,7 @@ public class FactionCommand implements CommandExecutor {
         action = args[0];
 
         if (action.equals("show")) {
-            infoString = "";
-            for (Faction faction : factions) {
-                infoString += faction.getName() + " -> members: " + faction.getMembers().size()  + "\n";
-            }
-            player.sendMessage(ChatColor.BLUE + infoString);
-            return true;
+            return showFactionsInfo();
         }
         else if (action.equals("leave")) {
             if (isPlayerOnFaction == false) {

@@ -193,11 +193,6 @@ public class FactionCommand implements CommandExecutor {
             player.sendMessage(ChatColor.RED + "Faction names must be longer than 3 characters");
             return false;
         }
-        
-        if (commandFaction == null) {
-            player.sendMessage(ChatColor.RED + "Faction " + factionName + " not found");
-            return false;
-        }
 
         if (action.equals("create")) {
             if (isPlayerOnFaction == true) {
@@ -215,6 +210,11 @@ public class FactionCommand implements CommandExecutor {
             return playerJoinFaction(factionName, playerName);
         }
         else if (action.equals("members")) {
+            if (commandFaction == null) {
+                player.sendMessage(ChatColor.RED + "Faction " + factionName + " not found");
+                return false;
+            }
+
             return showPlayersOnFaction(commandFaction);
         }
         else if(action.equals("set_safe_zone")) {

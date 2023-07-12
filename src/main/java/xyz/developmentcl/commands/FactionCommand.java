@@ -33,6 +33,15 @@ public class FactionCommand implements CommandExecutor {
         this.activePlayers = activePlayers;
     }
 
+    private boolean isPlayerLoggedIn(String playerName) {
+        for (PlayerPlugin player : activePlayers) {
+            if (player.getPlayerName().equals(playerName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Faction getFactionByName(String factionName) {
         for (Faction faction : factions) {
             if (faction.getName().equals(factionName)) {
@@ -57,6 +66,17 @@ public class FactionCommand implements CommandExecutor {
         for (PlayerPlugin member : members) {
             player.sendMessage(ChatColor.RED + member.getPlayerName());
         }
+        return;
+    }
+
+    private boolean createFaction(String factionName) {
+        if (this.connector.insertFaction(factionName)) {
+            player.sendMessage(ChatColor.GREEN + "Faction Created Succesfully");
+            this.factions.add(new Faction(factionName, -1));
+            return true;
+        }
+        player.sendMessage(ChatColor.RED + "Error creating faction");
+        return false;
     }
 
     @Override
@@ -69,13 +89,7 @@ public class FactionCommand implements CommandExecutor {
         player = (Player) sender;
         playerName = player.getDisplayName();
         
-        isLoggedIn = false;
-        for (PlayerPlugin aPlayer : activePlayers) {
-            if (aPlayer.getPlayerName().equals(playerName)) {
-                isLoggedIn = true;
-                break;
-            }
-        }
+        isLoggedIn = isPlayerLoggedIn(playerName);
 
         if (isLoggedIn == false) {
             player.sendMessage(ChatColor.RED + "You must be logged in to use this command");
@@ -165,15 +179,11 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (action.equals("create")) {
-            if (this.connector.insertFaction(factionName)) {
-                player.sendMessage(ChatColor.GREEN + "Faction Created Succesfully");
-                // Function to get faction from DB
-                Faction newFaction = new Faction(factionName, -1);
-                this.factions.add(newFaction);
-                return true;
+            if (isOnFaction == true) {
+                player.sendMessage(ChatColor.RED + "You are already into a faction");
+                return false;
             }
-            player.sendMessage(ChatColor.RED + "Error creating faction");
-            return false;
+            return createFaction(factionName);
         }
         else if (action.equals("join")) {
             if (isOnFaction == true) {

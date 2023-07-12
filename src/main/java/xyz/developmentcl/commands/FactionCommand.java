@@ -123,6 +123,18 @@ public class FactionCommand implements CommandExecutor {
         return false;
     }
 
+    private boolean playerLeaveFaction(String factionName, String playerName) {
+        if (this.connector.removePlayerFromFaction(factionName, playerName)) {
+            Faction playerFaction = getPlayerFaction(playerName);
+            PlayerPlugin playerPlugin = getPlayerFromActivePlayers(playerName);
+            playerFaction.removeMember(playerPlugin);
+            player.sendMessage(ChatColor.GREEN + "Left faction Succesfully");
+            return true;
+        }
+        player.sendMessage(ChatColor.RED + "Error leaving faction");
+        return false;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -151,39 +163,7 @@ public class FactionCommand implements CommandExecutor {
             return showFactionsInfo();
         }
         else if (action.equals("leave")) {
-            if (isPlayerOnFaction == false) {
-                player.sendMessage(ChatColor.RED + "You are not into any faction");
-                return false;
-            }
-            factionName = "";
-            for (Faction faction : factions) {
-                for (PlayerPlugin player : faction.getMembers()) {
-                    if (player.getPlayerName().equals(playerName)) {
-                        factionName = faction.getName();
-                        break;
-                    }
-                }
-                if (factionName != "") {
-                    break;
-                }
-            }
-            if (this.connector.removePlayerFromFaction(factionName, playerName)) {
-                for (Faction faction : factions) {
-                    if (faction.getName().equals(factionName)) {
-                        for (PlayerPlugin member : faction.getMembers()) {
-                            if (member.getPlayerName().equals(playerName)) {
-                                faction.removeMember(member);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                player.sendMessage(ChatColor.GREEN + "You left your faction Succesfully");
-                return true;
-            }
-            player.sendMessage(ChatColor.RED + "Error leaving faction");
-            return false;
+            return playerLeaveFaction(factionName, playerName);
         }
 
         if (args.length != 2) {

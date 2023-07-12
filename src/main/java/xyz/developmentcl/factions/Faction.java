@@ -11,6 +11,7 @@ public class Faction {
     private List<PlayerPlugin> members;
     private List<Faction> enemies;
     private List<Faction> allies;
+    List<List<Integer>> safeCoordinates;
 
     public Faction(String name, int id) {
         this.name = name;
@@ -18,6 +19,7 @@ public class Faction {
         members = new ArrayList<PlayerPlugin>();
         enemies = new ArrayList<Faction>();
         allies = new ArrayList<Faction>();
+        safeCoordinates = new ArrayList<>();
     }
 
     public String getName() {
@@ -26,6 +28,14 @@ public class Faction {
 
     public int getId() {
         return this.id;
+    }
+
+    public List<List<Integer>> getSafeCoordinates() {
+        return safeCoordinates;
+    }
+
+    public void setSafeCoordinates(List<List<Integer>> safeCoordinates) {
+        this.safeCoordinates = safeCoordinates;
     }
 
     public void addMember(PlayerPlugin player) {

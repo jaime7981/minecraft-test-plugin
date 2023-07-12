@@ -7,6 +7,7 @@ import xyz.developmentcl.factions.Faction;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -135,6 +136,24 @@ public class FactionCommand implements CommandExecutor {
         return false;
     }
 
+    private List<List<Integer>> setSafeZoneDimentions(Location playerLocation) {
+        int startX = playerLocation.getBlockX() - 10;
+        int startY = playerLocation.getBlockY() - 10;
+        int startZ = playerLocation.getBlockZ() - 10;
+        int endX = playerLocation.getBlockX() + 10;
+        int endY = playerLocation.getBlockY() + 10;
+        int endZ = playerLocation.getBlockZ() + 10;
+
+        return List.of(List.of(startX, startY, startZ), List.of(endX, endY, endZ));
+    }
+
+    private boolean playerSetSafeZone(Faction faction, Player player) {
+        Location playerLocation = player.getLocation();
+        List<List<Integer>> safeZoneCoordinates = setSafeZoneDimentions(playerLocation);
+        connector.setSafeZoneCoordinates(faction, safeZoneCoordinates);
+        return true;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -213,17 +232,7 @@ public class FactionCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "You are not into any faction");
                 return false;
             }
-            if (playerFaction.getName().equals(factionName)) {
-                player.sendMessage(ChatColor.RED + "You can't set your faction as safe zone");
-                return false;
-            }
-            /*
-            if (this.connector.setSafeZone(playerFaction)) {
-                player.sendMessage(ChatColor.GREEN + "Safe zone set Succesfully");
-                return true;
-            }
-             */
-            return true;
+            return playerSetSafeZone(playerFaction, player);
         }
         return false;
     }

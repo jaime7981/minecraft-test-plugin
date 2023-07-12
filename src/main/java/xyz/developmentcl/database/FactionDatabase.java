@@ -7,8 +7,17 @@ import java.util.ArrayList;
 
 public class FactionDatabase {
 
+    public static List<List<Integer>> formatCoordinates(int startX, int startY, int startZ, int endX, int endY, int endZ) {
+        List<List<Integer>> coordinates = new ArrayList<>();
+
+        coordinates.add(List.of(startX, startY, startZ));
+        coordinates.add(List.of(endX, endY, endZ));
+
+        return coordinates;
+    }
+
     // Insert coordinates into the database
-    public boolean insertFactionSafeCoordinates(Connection connection, int faction_id, int startX, int startY, int startZ, int endX, int endY, int endZ) {
+    public static List<List<Integer>> insertFactionSafeCoordinates(Connection connection, int faction_id, int startX, int startY, int startZ, int endX, int endY, int endZ) {
         String query = "INSERT INTO faction_safe_coordinates (start_x, start_y, start_z, end_x, end_y, end_z, faction_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -23,15 +32,15 @@ public class FactionDatabase {
 
             statement.executeUpdate();
             System.out.println("Coordinates inserted successfully.");
-            return true;
+            return formatCoordinates(startX, startY, startZ, endX, endY, endZ);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     // Update coordinates in the database
-    public boolean updateCoordinates(Connection connection, int faction_id, int id, int startX, int startY, int startZ, int endX, int endY, int endZ) {
+    public static List<List<Integer>> updateCoordinates(Connection connection, int faction_id, int id, int startX, int startY, int startZ, int endX, int endY, int endZ) {
         String query = "UPDATE faction_safe_coordinates SET start_x = ?, start_y = ?, start_z = ?, end_x = ?, end_y = ?, end_z = ?, faction_id = ? WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -46,15 +55,15 @@ public class FactionDatabase {
 
             statement.executeUpdate();
             System.out.println("Coordinates updated successfully.");
-            return true;
+            return formatCoordinates(startX, startY, startZ, endX, endY, endZ);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     // Retrieve coordinates from the database based on the foreign key
-    public List<List<Integer>> getCoordinatesByForeignKey(Connection connection, int faction_id) {
+    public static List<List<Integer>> getCoordinatesByForeignKey(Connection connection, int faction_id) {
         String query = "SELECT * FROM faction_safe_coordinates WHERE faction_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -79,12 +88,7 @@ public class FactionDatabase {
                 System.out.println("End Y: " + endY);
                 System.out.println("End Z: " + endZ);
 
-                List<List<Integer>> coordinates = new ArrayList<>();
-
-                coordinates.add(List.of(startX, startY, startZ));
-                coordinates.add(List.of(endX, endY, endZ));
-
-                return coordinates;
+                return formatCoordinates(startX, startY, startZ, endX, endY, endZ);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,7 +97,7 @@ public class FactionDatabase {
     }
 
     // Delete coordinates from the database based on the foreign key
-    public boolean deleteCoordinatesByForeignKey(Connection connection, int faction_id) {
+    public static boolean deleteCoordinatesByForeignKey(Connection connection, int faction_id) {
         String query = "DELETE FROM faction_safe_coordinates WHERE faction_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {

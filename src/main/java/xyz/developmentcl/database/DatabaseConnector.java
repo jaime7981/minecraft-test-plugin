@@ -243,5 +243,40 @@ public class DatabaseConnector {
         return new ArrayList<>();
     }
 
+    public boolean setSafeZoneCoordinates(Faction faction, List<List<Integer>> coordinates) {
+        
+        List<List<Integer>> newCoordinates = null;
+
+        if (faction.getSafeCoordinates().isEmpty()) {
+            newCoordinates = FactionDatabase.insertFactionSafeCoordinates(
+                connection,
+                faction.getId(),
+                coordinates.get(0).get(0),
+                coordinates.get(0).get(1),
+                coordinates.get(0).get(2),
+                coordinates.get(1).get(0),
+                coordinates.get(1).get(1),
+                coordinates.get(1).get(2)
+            );
+        }
+        else {
+            newCoordinates = FactionDatabase.updateCoordinates(
+                connection,
+                faction.getId(),
+                faction.getSafeCoordinates().get(0).get(0),
+                coordinates.get(0).get(0),
+                coordinates.get(0).get(1),
+                coordinates.get(0).get(2),
+                coordinates.get(1).get(0),
+                coordinates.get(1).get(1),
+                coordinates.get(1).get(2)
+            );
+        }
+
+        faction.setSafeCoordinates(newCoordinates);
+
+        return true;
+    }
+
 }
 

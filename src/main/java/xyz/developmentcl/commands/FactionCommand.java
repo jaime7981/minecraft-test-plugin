@@ -123,9 +123,9 @@ public class FactionCommand implements CommandExecutor {
         return false;
     }
 
-    private boolean playerLeaveFaction(String factionName, String playerName) {
-        if (this.connector.removePlayerFromFaction(factionName, playerName)) {
-            Faction playerFaction = getPlayerFaction(playerName);
+    private boolean playerLeaveFaction(String playerName) {
+        Faction playerFaction = getPlayerFaction(playerName);
+        if (this.connector.removePlayerFromFaction(playerFaction.getName(), playerName)) {
             PlayerPlugin playerPlugin = getPlayerFromActivePlayers(playerName);
             playerFaction.removeMember(playerPlugin);
             player.sendMessage(ChatColor.GREEN + "Left faction Succesfully");
@@ -163,7 +163,12 @@ public class FactionCommand implements CommandExecutor {
             return showFactionsInfo();
         }
         else if (action.equals("leave")) {
-            return playerLeaveFaction(factionName, playerName);
+            if (isPlayerOnFaction == false) {
+                player.sendMessage(ChatColor.RED + "You are not in a faction");
+                return false;
+            }
+
+            return playerLeaveFaction(playerName);
         }
 
         if (args.length != 2) {

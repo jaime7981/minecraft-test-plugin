@@ -62,6 +62,15 @@ public class FactionCommand implements CommandExecutor {
         return null;
     }
 
+    private PlayerPlugin getPlayerFromActivePlayers(String playerName) {
+        for (PlayerPlugin player : activePlayers) {
+            if (player.getPlayerName().equals(playerName)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
     private Faction getPlayerFaction(String playerName) {
         for (Faction faction : factions) {
             if (faction.isPlayerOnFaction(playerName) == true) {
@@ -71,13 +80,13 @@ public class FactionCommand implements CommandExecutor {
         return null;
     }
 
-    private void showPlayersOnFaction(Faction faction) {
+    private boolean showPlayersOnFaction(Faction faction) {
         List<PlayerPlugin> members = faction.getMembers();
         player.sendMessage(ChatColor.BLUE + faction.getName() + ":");
         for (PlayerPlugin member : members) {
             player.sendMessage(ChatColor.RED + member.getPlayerName());
         }
-        return;
+        return true;
     }
 
     private boolean createFaction(String factionName) {
@@ -87,6 +96,18 @@ public class FactionCommand implements CommandExecutor {
             return true;
         }
         player.sendMessage(ChatColor.RED + "Error creating faction");
+        return false;
+    }
+
+    private boolean playerJoinFaction(String factionName, String playerName) {
+        if (this.connector.insertPlayerIntoFaction(factionName, playerName)) {
+            Faction playerFaction = getPlayerFaction(playerName);
+            PlayerPlugin playerPlugin = getPlayerFromActivePlayers(playerName);
+            playerFaction.addMember(playerPlugin);
+            player.sendMessage(ChatColor.GREEN + "Joined to faction Succesfully");
+            return true;
+        }
+        player.sendMessage(ChatColor.RED + "Error joining faction");
         return false;
     }
 
@@ -190,27 +211,11 @@ public class FactionCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "You are already into a faction");
                 return false;
             }
-            if (this.connector.insertPlayerIntoFaction(factionName, playerName)) {
-                for (Faction faction : factions) {
-                    if (faction.getName().equals(factionName)) {
-                        for (PlayerPlugin pPlayer : activePlayers) {
-                            if (pPlayer.getPlayerName().equals(playerName)) {
-                                faction.addMember(pPlayer);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                player.sendMessage(ChatColor.GREEN + "Joined to faction Succesfully");
-                return true;
-            }
-            player.sendMessage(ChatColor.RED + "Error joining faction");
-            return false;
+            
+            return playerJoinFaction(factionName, playerName);
         }
         else if (action.equals("members")) {
-            showPlayersOnFaction(commandFaction);
-            return true;
+            return showPlayersOnFaction(commandFaction);
         }
         else if(action.equals("set_safe_zone")) {
             Faction playerFaction = getPlayerFaction(playerName);

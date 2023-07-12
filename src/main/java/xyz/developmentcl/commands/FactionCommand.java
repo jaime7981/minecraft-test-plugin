@@ -132,15 +132,13 @@ public class FactionCommand implements CommandExecutor {
         
         player = (Player) sender;
         playerName = player.getDisplayName();
-        
         isPlayerLoggedIn = isPlayerLoggedIn(playerName);
+        isPlayerOnFaction = isPlayerOnFaction(playerName);
 
         if (isPlayerLoggedIn == false) {
             player.sendMessage(ChatColor.RED + "You must be logged in to use this command");
             return false;
         }
-
-        isPlayerOnFaction = isPlayerOnFaction(playerName);
 
         if (!(0 < args.length && args.length < 3)) {
             player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");

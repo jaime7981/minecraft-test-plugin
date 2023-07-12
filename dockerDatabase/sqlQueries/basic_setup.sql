@@ -70,12 +70,12 @@ CREATE TABLE faction_relationship (
 
 CREATE TABLE faction_safe_coordinates (
     id SERIAL PRIMARY KEY,
-    start_x DOUBLE PRECISION,
-    start_y DOUBLE PRECISION,
-    start_z DOUBLE PRECISION,
-    end_x DOUBLE PRECISION,
-    end_y DOUBLE PRECISION,
-    end_z DOUBLE PRECISION,
+    start_x INTEGER,
+    start_y INTEGER,
+    start_z INTEGER,
+    end_x INTEGER,
+    end_y INTEGER,
+    end_z INTEGER,
     faction_id INTEGER REFERENCES faction(id)
 );
 

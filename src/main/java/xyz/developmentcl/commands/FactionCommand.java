@@ -24,8 +24,8 @@ public class FactionCommand implements CommandExecutor {
     private String factionName;
     private Faction commandFaction;
     private String infoString;
-    private Boolean isLoggedIn;
-    private Boolean isOnFaction;
+    private Boolean isPlayerLoggedIn;
+    private Boolean isPlayerOnFaction;
 
     public FactionCommand(DatabaseConnector connector, List<Faction> factions, List<PlayerPlugin> activePlayers) {
         this.connector = connector;
@@ -37,6 +37,17 @@ public class FactionCommand implements CommandExecutor {
         for (PlayerPlugin player : activePlayers) {
             if (player.getPlayerName().equals(playerName)) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPlayerOnFaction(String playerName) {
+        for (Faction faction : factions) {
+            for (PlayerPlugin player : faction.getMembers()) {
+                if (player.getPlayerName().equals(playerName)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -89,25 +100,14 @@ public class FactionCommand implements CommandExecutor {
         player = (Player) sender;
         playerName = player.getDisplayName();
         
-        isLoggedIn = isPlayerLoggedIn(playerName);
+        isPlayerLoggedIn = isPlayerLoggedIn(playerName);
 
-        if (isLoggedIn == false) {
+        if (isPlayerLoggedIn == false) {
             player.sendMessage(ChatColor.RED + "You must be logged in to use this command");
             return false;
         }
 
-        isOnFaction = false;
-        for (Faction faction : factions) {
-            for (PlayerPlugin player : faction.getMembers()) {
-                if (player.getPlayerName().equals(playerName)) {
-                    isOnFaction = true;
-                    break;
-                }
-            }
-            if (isOnFaction == true) {
-                break;
-            }
-        }
+        isPlayerOnFaction = isPlayerOnFaction(playerName);
 
         if (!(0 < args.length && args.length < 3)) {
             player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");
@@ -125,7 +125,7 @@ public class FactionCommand implements CommandExecutor {
             return true;
         }
         else if (action.equals("leave")) {
-            if (isOnFaction == false) {
+            if (isPlayerOnFaction == false) {
                 player.sendMessage(ChatColor.RED + "You are not into any faction");
                 return false;
             }
@@ -179,14 +179,14 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (action.equals("create")) {
-            if (isOnFaction == true) {
+            if (isPlayerOnFaction == true) {
                 player.sendMessage(ChatColor.RED + "You are already into a faction");
                 return false;
             }
             return createFaction(factionName);
         }
         else if (action.equals("join")) {
-            if (isOnFaction == true) {
+            if (isPlayerOnFaction == true) {
                 player.sendMessage(ChatColor.RED + "You are already into a faction");
                 return false;
             }

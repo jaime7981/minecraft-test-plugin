@@ -22,6 +22,7 @@ public class FactionCommand implements CommandExecutor {
     private String playerName;
     private String action;
     private String factionName;
+    private Faction commandFaction;
     private String infoString;
     private Boolean isLoggedIn;
     private Boolean isOnFaction;
@@ -32,6 +33,15 @@ public class FactionCommand implements CommandExecutor {
         this.activePlayers = activePlayers;
     }
 
+    private Faction getFactionByName(String factionName) {
+        for (Faction faction : factions) {
+            if (faction.getName().equals(factionName)) {
+                return faction;
+            }
+        }
+        return null;
+    }
+
     private Faction getPlayerFaction(String playerName) {
         for (Faction faction : factions) {
             if (faction.isPlayerOnFaction(playerName) == true) {
@@ -39,6 +49,14 @@ public class FactionCommand implements CommandExecutor {
             }
         }
         return null;
+    }
+
+    private void showPlayersOnFaction(Faction faction) {
+        List<PlayerPlugin> members = faction.getMembers();
+        player.sendMessage(ChatColor.BLUE + faction.getName() + ":");
+        for (PlayerPlugin member : members) {
+            player.sendMessage(ChatColor.RED + member.getPlayerName());
+        }
     }
 
     @Override
@@ -134,9 +152,15 @@ public class FactionCommand implements CommandExecutor {
         }
 
         factionName = args[1].toUpperCase();
+        commandFaction = getFactionByName(factionName);
 
         if (factionName.length() <= 4) {
             player.sendMessage(ChatColor.RED + "Faction names must be longer than 3 characters");
+            return false;
+        }
+        
+        if (commandFaction == null) {
+            player.sendMessage(ChatColor.RED + "Faction " + factionName + " not found");
             return false;
         }
 
@@ -175,16 +199,7 @@ public class FactionCommand implements CommandExecutor {
             return false;
         }
         else if (action.equals("members")) {
-            player.sendMessage(ChatColor.BLUE + factionName + ":");
-            for (Faction faction : factions) {
-                if (faction.getName().equals(factionName)) {
-                    List<PlayerPlugin> members = faction.getMembers();
-                    for (PlayerPlugin member : members) {
-                        player.sendMessage(ChatColor.RED + member.getPlayerName());
-                    }
-                    break;
-                }
-            }
+            showPlayersOnFaction(commandFaction);
             return true;
         }
         else if(action.equals("set_safe_zone")) {

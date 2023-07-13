@@ -1,0 +1,1 @@
+java -Xmx3072M -Xms3072M -jar spigot-1.19.4.jar nogui < /dev/null > /mine_server/mine_server.log 2>&1 &

@@ -4,12 +4,13 @@
     "sqltools.connections": [
         {
             "previewLimit": 50,
-            "server": "localhost",
+            "server": "45.33.66.144",
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "minecraft_server",
             "database": "minecraft_server_db",
-            "username": "jaime_admin"
+            "username": "jaime_admin",
+            "password": "Jaime@79811"
         }
     ]
 }

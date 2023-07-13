@@ -1,5 +1,12 @@
 package xyz.developmentcl.game_functions;
 
+import java.util.List;
+
+import xyz.developmentcl.factions.Faction;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 public class GameFunctions {
     public static boolean isPointInRectangularPrism(double x1, double y1, double z1, double x2, double y2, double z2, double px, double py, double pz) {
         // Calculate the vectors from the top-left-front corner to the other corners
@@ -19,5 +26,38 @@ public class GameFunctions {
             }
         }
         return false;
+    }
+
+    public static boolean isPointInRectangularPrismCoordinates(List<List<Integer>> corners, Location location) {
+        return isPointInRectangularPrism(
+                corners.get(0).get(0),
+                corners.get(0).get(1),
+                corners.get(0).get(2),
+                corners.get(1).get(0),
+                corners.get(1).get(1),
+                corners.get(1).get(2),
+                location.getX(),
+                location.getY(),
+                location.getZ()
+        );
+    }
+
+    public static boolean isPlayerAllowedToBuild(List<Faction> factions, Player player, Location itemLocation) {
+        List<List<Integer>> factionSafeZoneCorners = null;
+
+        for (Faction faction : factions) {
+            // Get the faction's safe zone corners
+            factionSafeZoneCorners = faction.getSafeCoordinates();
+
+            // Check if the player is in the faction's safe zone
+            if (isPointInRectangularPrismCoordinates(factionSafeZoneCorners, itemLocation)) {
+                // check if player is not in faction
+                if (!faction.isPlayerOnFaction(player.getName())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

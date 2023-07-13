@@ -172,7 +172,7 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (!(0 < args.length && args.length < 3)) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone) <faction_name>");
             return true;
         }
 
@@ -191,7 +191,7 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (args.length != 2) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone) <faction_name>");
             return false;
         }
 
@@ -226,7 +226,7 @@ public class FactionCommand implements CommandExecutor {
 
             return showPlayersOnFaction(commandFaction);
         }
-        else if(action.equals("set_safe_zone")) {
+        else if(action.equals("safe_zone")) {
             Faction playerFaction = getPlayerFaction(playerName);
             if (playerFaction == null) {
                 player.sendMessage(ChatColor.RED + "You are not into any faction");

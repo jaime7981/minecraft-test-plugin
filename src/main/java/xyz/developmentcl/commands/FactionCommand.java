@@ -71,6 +71,17 @@ public class FactionCommand implements CommandExecutor {
         return null;
     }
 
+    private PlayerPlugin getPlayerFromFaction(String playerName) {
+        for (Faction faction : factions) {
+            for (PlayerPlugin player : faction.getMembers()) {
+                if (player.getPlayerName().equals(playerName)) {
+                    return player;
+                }
+            }
+        }
+        return null;
+    }
+
     private Faction getPlayerFaction(String playerName) {
         for (Faction faction : factions) {
             if (faction.isPlayerOnFaction(playerName) == true) {
@@ -127,7 +138,7 @@ public class FactionCommand implements CommandExecutor {
     private boolean playerLeaveFaction(String playerName) {
         Faction playerFaction = getPlayerFaction(playerName);
         if (this.connector.removePlayerFromFaction(playerFaction.getName(), playerName)) {
-            PlayerPlugin playerPlugin = getPlayerFromActivePlayers(playerName);
+            PlayerPlugin playerPlugin = getPlayerFromFaction(playerName);
             playerFaction.removeMember(playerPlugin);
             player.sendMessage(ChatColor.GREEN + "Left faction Succesfully");
             return true;

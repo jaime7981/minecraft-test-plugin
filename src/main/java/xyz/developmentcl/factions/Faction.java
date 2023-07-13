@@ -43,7 +43,14 @@ public class Faction {
     }
 
     public void removeMember(PlayerPlugin player) {
-        members.remove(player);
+        for (PlayerPlugin factionPlayer : this.members) {
+            if (player.getPlayerName().equals(factionPlayer.getPlayerName())) {
+                members.remove(factionPlayer);
+                return ;
+            }
+        }
+
+        return ;
     }
 
     public List<PlayerPlugin> getMembers() {

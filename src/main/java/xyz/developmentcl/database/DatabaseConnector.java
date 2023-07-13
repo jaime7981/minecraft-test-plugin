@@ -253,7 +253,7 @@ public class DatabaseConnector {
         
         List<List<Integer>> newCoordinates = null;
 
-        if (faction.getSafeCoordinates().equals(null) || faction.getSafeCoordinates().isEmpty()) {
+        if (faction.getSafeCoordinates() == null || faction.getSafeCoordinates().isEmpty()) {
             newCoordinates = FactionDatabase.insertFactionSafeCoordinates(
                 connection,
                 faction.getId(),
@@ -269,7 +269,6 @@ public class DatabaseConnector {
             newCoordinates = FactionDatabase.updateCoordinates(
                 connection,
                 faction.getId(),
-                faction.getSafeCoordinates().get(0).get(0),
                 coordinates.get(0).get(0),
                 coordinates.get(0).get(1),
                 coordinates.get(0).get(2),

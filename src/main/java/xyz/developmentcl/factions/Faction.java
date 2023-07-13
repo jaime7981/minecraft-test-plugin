@@ -31,7 +31,10 @@ public class Faction {
     }
 
     public List<List<Integer>> getSafeCoordinates() {
-        return safeCoordinates;
+        if (this.safeCoordinates == null) {
+            return new ArrayList<>();
+        }
+        return this.safeCoordinates;
     }
 
     public void setSafeCoordinates(List<List<Integer>> safeCoordinates) {

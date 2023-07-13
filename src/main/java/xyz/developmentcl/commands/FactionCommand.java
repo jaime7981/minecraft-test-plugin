@@ -147,10 +147,11 @@ public class FactionCommand implements CommandExecutor {
         return List.of(List.of(startX, startY, startZ), List.of(endX, endY, endZ));
     }
 
-    private boolean playerSetSafeZone(Faction faction, Player player) {
+    private boolean playerSetSafeZone(Player player) {
+        Faction playerFaction = getPlayerFaction(player.getDisplayName());
         Location playerLocation = player.getLocation();
         List<List<Integer>> safeZoneCoordinates = setSafeZoneDimentions(playerLocation);
-        connector.setSafeZoneCoordinates(faction, safeZoneCoordinates);
+        connector.setSafeZoneCoordinates(playerFaction, safeZoneCoordinates);
         return true;
     }
 
@@ -189,6 +190,14 @@ public class FactionCommand implements CommandExecutor {
 
             return playerLeaveFaction(playerName);
         }
+        else if(action.equals("safe_zone")) {
+            if (isPlayerOnFaction == false) {
+                player.sendMessage(ChatColor.RED + "You are not in a faction");
+                return false;
+            }
+
+            return playerSetSafeZone(player);
+        }
 
         if (args.length != 2) {
             player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone) <faction_name>");
@@ -225,14 +234,6 @@ public class FactionCommand implements CommandExecutor {
             }
 
             return showPlayersOnFaction(commandFaction);
-        }
-        else if(action.equals("safe_zone")) {
-            Faction playerFaction = getPlayerFaction(playerName);
-            if (playerFaction == null) {
-                player.sendMessage(ChatColor.RED + "You are not into any faction");
-                return false;
-            }
-            return playerSetSafeZone(playerFaction, player);
         }
         return false;
     }

@@ -114,7 +114,7 @@ public class FactionCommand implements CommandExecutor {
 
     private boolean playerJoinFaction(String factionName, String playerName) {
         if (this.connector.insertPlayerIntoFaction(factionName, playerName)) {
-            Faction playerFaction = getPlayerFaction(playerName);
+            Faction playerFaction = getFactionByName(factionName);
             PlayerPlugin playerPlugin = getPlayerFromActivePlayers(playerName);
             playerFaction.addMember(playerPlugin);
             player.sendMessage(ChatColor.GREEN + "Joined to faction Succesfully");

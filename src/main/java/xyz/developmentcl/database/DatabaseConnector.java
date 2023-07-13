@@ -212,6 +212,7 @@ public class DatabaseConnector {
                 if (!loadedFactions.contains(factionName)) {
                     loadedFactions.add(factionName);
                     Faction faction = new Faction(factionName, factionId);
+                    faction.setSafeCoordinates(getSafeZoneCoordinates(faction));
                     loadedFactionsEntity.add(faction);
                 }
             }
@@ -241,6 +242,11 @@ public class DatabaseConnector {
             e.printStackTrace();
         }
         return new ArrayList<>();
+    }
+
+    public List<List<Integer>> getSafeZoneCoordinates(Faction faction) {
+        List<List<Integer>> coordinates = FactionDatabase.getCoordinatesByForeignKey(connection, faction.getId());
+        return coordinates;
     }
 
     public boolean setSafeZoneCoordinates(Faction faction, List<List<Integer>> coordinates) {

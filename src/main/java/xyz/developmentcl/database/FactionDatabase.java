@@ -41,7 +41,7 @@ public class FactionDatabase {
 
     // Update coordinates in the database
     public static List<List<Integer>> updateCoordinates(Connection connection, int faction_id, int id, int startX, int startY, int startZ, int endX, int endY, int endZ) {
-        String query = "UPDATE faction_safe_coordinates SET start_x = ?, start_y = ?, start_z = ?, end_x = ?, end_y = ?, end_z = ?, faction_id = ? WHERE id = ?";
+        String query = "UPDATE faction_safe_coordinates SET start_x = ?, start_y = ?, start_z = ?, end_x = ?, end_y = ?, end_z = ? WHERE faction_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, startX);
@@ -51,7 +51,6 @@ public class FactionDatabase {
             statement.setInt(5, endY);
             statement.setInt(6, endZ);
             statement.setInt(7, faction_id);
-            statement.setInt(8, id);
 
             statement.executeUpdate();
             System.out.println("Coordinates updated successfully.");

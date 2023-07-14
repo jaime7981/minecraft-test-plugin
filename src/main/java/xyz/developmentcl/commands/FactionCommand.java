@@ -158,6 +158,27 @@ public class FactionCommand implements CommandExecutor {
         return List.of(List.of(startX, startY, startZ), List.of(endX, endY, endZ));
     }
 
+    private boolean playerTeleportToSafeZone(Player player) {
+        Faction playerFaction = getPlayerFaction(player.getDisplayName());
+        List<List<Integer>> safeZoneCoordinates = playerFaction.getSafeCoordinates();
+
+        if (safeZoneCoordinates.size() == 0) {
+            player.sendMessage(ChatColor.RED + "Safe zone not set");
+            return false;
+        }
+
+        player.teleport(
+            new Location(
+                player.getWorld(), 
+                safeZoneCoordinates.get(0).get(0) + 10, 
+                safeZoneCoordinates.get(0).get(1) + 10, 
+                safeZoneCoordinates.get(0).get(2) + 10
+            )
+        );
+
+        return true;
+    }
+
     private boolean playerSetSafeZone(Player player) {
         Faction playerFaction = getPlayerFaction(player.getDisplayName());
         Location playerLocation = player.getLocation();
@@ -184,7 +205,7 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (!(0 < args.length && args.length < 3)) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone,teleport) <faction_name>");
             return true;
         }
 
@@ -209,9 +230,17 @@ public class FactionCommand implements CommandExecutor {
 
             return playerSetSafeZone(player);
         }
+        else if(action.equals("safe_zone")) {
+            if (isPlayerOnFaction == false) {
+                player.sendMessage(ChatColor.RED + "You are not in a faction");
+                return false;
+            }
+
+            return playerTeleportToSafeZone(player);
+        }
 
         if (args.length != 2) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone,teleport) <faction_name>");
             return false;
         }
 

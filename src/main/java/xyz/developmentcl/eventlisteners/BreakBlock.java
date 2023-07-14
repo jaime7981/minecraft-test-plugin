@@ -25,15 +25,11 @@ public class BreakBlock implements Listener {
     public void onBlockDestroy(BlockBreakEvent e) {
         Player player = e.getPlayer();
         Block block = e.getBlock();
-        player.sendMessage(ChatColor.RED + "Player: " + player.getName() + "\nBlock broken: " + block.getType());
-        
         Location blockLocation = block.getLocation();
-        if (GameFunctions.isPlayerAllowedToBuild(this.factions, player, blockLocation)) {
-            player.sendMessage(ChatColor.GREEN + "You are allowed to build here!");
-        } else {
+        
+        if (!GameFunctions.isPlayerAllowedToBuild(this.factions, player, blockLocation)) {
             player.sendMessage(ChatColor.RED + "You are not allowed to build here!");
             e.setCancelled(true);
         }
-
     }
 }

@@ -205,7 +205,7 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (!(0 < args.length && args.length < 3)) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone,teleport) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone/teleport) <faction_name>");
             return true;
         }
 
@@ -230,7 +230,7 @@ public class FactionCommand implements CommandExecutor {
 
             return playerSetSafeZone(player);
         }
-        else if(action.equals("safe_zone")) {
+        else if(action.equals("tp")) {
             if (isPlayerOnFaction == false) {
                 player.sendMessage(ChatColor.RED + "You are not in a faction");
                 return false;
@@ -240,7 +240,7 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (args.length != 2) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone,teleport) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone/teleport) <faction_name>");
             return false;
         }
 

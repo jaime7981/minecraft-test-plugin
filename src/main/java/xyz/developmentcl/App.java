@@ -7,7 +7,7 @@ import xyz.developmentcl.commands.XPShopCommand;
 
 import xyz.developmentcl.database.DatabaseConnector;
 import xyz.developmentcl.database.PlayerPlugin;
-
+import xyz.developmentcl.eventlisteners.BlockPlace;
 import xyz.developmentcl.eventlisteners.BreakBlock;
 import xyz.developmentcl.eventlisteners.ServerLogin;
 import xyz.developmentcl.eventlisteners.ServerQuit;
@@ -40,6 +40,7 @@ public class App extends JavaPlugin {
         getCommand("register").setExecutor(new RegisterCommand(database));
         getCommand("xpshop").setExecutor(new XPShopCommand(activePlayers));
         getServer().getPluginManager().registerEvents(new BreakBlock(factions), this);
+        getServer().getPluginManager().registerEvents(new BlockPlace(factions), this);
         getServer().getPluginManager().registerEvents(new ServerLogin(), this);
         getServer().getPluginManager().registerEvents(new ServerQuit(activePlayers), this);
     }

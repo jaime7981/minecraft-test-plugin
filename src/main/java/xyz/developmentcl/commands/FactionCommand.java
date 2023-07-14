@@ -116,7 +116,17 @@ public class FactionCommand implements CommandExecutor {
     private boolean createFaction(String factionName) {
         if (this.connector.insertFaction(factionName)) {
             player.sendMessage(ChatColor.GREEN + "Faction Created Succesfully");
-            this.factions.add(new Faction(factionName, -1));
+
+            Faction new_faction = getFactionByName(factionName);
+
+            if (new_faction == null) {
+                player.sendMessage(ChatColor.RED + "Error assigning faction id, -1 will be setted for now");
+                this.factions.add(new Faction(factionName, -1));
+                return false;
+            }
+
+            this.factions.add(new_faction);
+            
             return true;
         }
         player.sendMessage(ChatColor.RED + "Error creating faction");
@@ -205,7 +215,7 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (!(0 < args.length && args.length < 3)) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone/teleport) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone/tp) <faction_name>");
             return true;
         }
 
@@ -240,7 +250,7 @@ public class FactionCommand implements CommandExecutor {
         }
 
         if (args.length != 2) {
-            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone/teleport) <faction_name>");
+            player.sendMessage(ChatColor.RED + "Usage: /faction <action> (show/join/leave/create/members/safe_zone/tp) <faction_name>");
             return false;
         }
 

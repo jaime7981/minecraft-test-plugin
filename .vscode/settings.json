@@ -12,5 +12,6 @@
             "username": "jaime_admin",
             "password": "Jaime@79811"
         }
-    ]
+    ],
+    "java.project.explorer.showNonJavaResources": true
 }

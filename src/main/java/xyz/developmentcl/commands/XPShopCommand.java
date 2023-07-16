@@ -57,7 +57,7 @@ public class XPShopCommand implements CommandExecutor {
     
     // Check if the command has the correct number of arguments
     if (args.length != 1) {
-        player.sendMessage(ChatColor.RED + "Usage: /xpshop <item> or /xpshop show to see all items and costs");
+        player.sendMessage(ChatColor.RED + "Usage: '/xpshop <item>' or '/xpshop show' to see all items and costs");
         return true;
     }
     

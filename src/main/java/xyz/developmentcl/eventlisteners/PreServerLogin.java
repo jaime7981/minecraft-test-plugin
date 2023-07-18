@@ -12,6 +12,12 @@ import java.util.List;
 
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
+    //Eliminar jugadores que no esten en la lista FAP del mas reciente al mas antiguo:
+
+    //Para eso, ver si esta lleno el servidor o no, si es asi, seguimos, si no, no pasa nada.
+    //Luego, comparamos si el que ingresa esta en FAP, si es asi, vemos el jugador mas reciente que no este en FAP y lo sacamos
+    //Luego de sacarlo, podemos ingresarlo.
+    //numero de FAP no puede superar el numero max de jugadores en el servidor
 
 public class PreServerLogin implements Listener {
 
@@ -20,6 +26,7 @@ public class PreServerLogin implements Listener {
         String playerName = e.getName();
     }
 
+    
 
     public List<String> getFabPlayers() throws IOException{
 
@@ -38,5 +45,7 @@ public class PreServerLogin implements Listener {
         br.close();
         return listNames;
     }
+
+
     
 }
